@@ -18,7 +18,7 @@ class Button:
     def __init__(self, pos, text, signal, x_buffer = BUTTON_BUFFER_X, 
                  y_buffer = BUTTON_BUFFER_Y, line_width = BUTTON_LINE_WIDTH,
                  font_size = BUTTON_TEXT_SIZE, button_color = BUTTON_COLOR,
-                 TEXT_COLOR = TEXT_COLOR):
+                 text_color = TEXT_COLOR):
 
         self.text = text
         self.signal = signal
@@ -27,7 +27,7 @@ class Button:
         self.x_buffer = x_buffer
         self.y_buffer = y_buffer
         self.font_size = font_size
-        self.text_color = TEXT_COLOR
+        self.text_color = text_color
         self.button_color = button_color
 
         self.font = pygame.font.Font(None, self.font_size)
@@ -48,7 +48,7 @@ class Button:
         pygame.draw.rect(window, self.button_color, self.rect, self.line_width)
 
     def clicked(self):
-        return self.signal
+        return self.signal()
     
     def align(self, x_divs, x, y_divs, y):
         window = pygame.display.get_surface()
@@ -93,15 +93,27 @@ class Text():
             y += size[1] + TEXT_BUFFER
 
 class GameText:
-    def __init__(self, text, pos, color, font_size):
+    def __init__(self, text, pos, color, font_size, flash=None):
         self.text = text
         self.pos = pos
         self.color = color
         self.font_size = font_size
         self.font = pygame.font.Font(None, self.font_size)
+        self.flash = flash
 
-    def draw(self):
-        window = pygame.display.get_surface()
-        message = self.font.render(self.text, True, self.color)
-        window.blit(message, self.pos)
+        if self.flash is not None:
+            self.on_interval, self.full_interval = self.flash
+            self.flash_counter = 0
+
+    def draw(self, surface=None):
+        if self.flash is None or self.flash_counter <= self.on_interval:
+            if surface is None:
+                window = pygame.display.get_surface()
+            else:
+                window = surface
+            message = self.font.render(self.text, True, self.color)
+            window.blit(message, self.pos)
+        
+        if self.flash:   
+            self.flash_counter = (self.flash_counter + 1) % self.full_interval
         

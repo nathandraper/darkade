@@ -47,8 +47,11 @@ class Ball:
         y_vel = self.speed * math.sin(angle)
         self.direction = [x_vel, y_vel]
     
-    def draw(self):
-        window = pygame.display.get_surface()
+    def draw(self, surface=None):
+        if surface is None:
+            window = pygame.display.get_surface()
+        else:
+            window = surface
         pos = (round(self.x), round(self.y))
         pygame.draw.circle(window, self.color, pos, self.width // 2)
     
@@ -97,8 +100,11 @@ class Paddle:
 
         return new_x, angle
     
-    def draw(self):
-        window = pygame.display.get_surface()
+    def draw(self, surface=None):
+        if surface is None:
+            window = pygame.display.get_surface()
+        else:
+            window = surface
         pygame.draw.rect(window, self.color, self.rect)
 
 class Wall:
@@ -107,5 +113,9 @@ class Wall:
         self.color = color
         self.rect = pygame.rect.Rect(0, y, pygame.display.get_surface().get_width(), 5)
     
-    def draw(self):
-        pygame.draw.rect(pygame.display.get_surface(), self.color, self.rect)
+    def draw(self, surface=None):
+        if surface is None:
+            window = pygame.display.get_surface()
+        else:
+            window = surface
+        pygame.draw.rect(window, self.color, self.rect)
